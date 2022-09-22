@@ -55,29 +55,30 @@ int main(){
             switch ( *(int *)( pBuffer + WORKER ) ){
                 case 1:
 
-                    
                     PUSH( pBuffer, Sentinela );
-    
 
                     break;
                 case 2:
+
                     POP( pBuffer, Sentinela );
 
                     break;
                 case 3:
+
                     SEARCH( pBuffer, Sentinela );
 
                     break;
                 case 4:
+
                     LIST( pBuffer, Sentinela );
-                    
+
                     break;
                 case 0:
 
                     free(pBuffer);
                     free(Sentinela);
-                    return 0;
 
+                    return 0;
             }
 
         } while ( *(int *)( pBuffer + WORKER ) != 0 );
@@ -93,6 +94,7 @@ int menu(void *pBuffer){
     printf("\n2 - Apagar");
     printf("\n3 - Buscar");
     printf("\n4 - Listar");
+    printf("\n0 - Sair");
     printf("\nEscolha:");
     scanf("%d", &*(int *)(pBuffer + WORKER));
     getchar();
@@ -114,7 +116,7 @@ void PUSH( void *pBuffer, void *Sentinela ){
     printf("#-- Nova pessoa --#");
 
     printf("\nNome: ");
-    scanf("%s", (char *)NEW_PERSON );
+    scanf("%19[^\n]%*c", (char *)NEW_PERSON );
     
     printf("\nIdade: ");
     scanf("%s", (char *)( NEW_PERSON + sizeof(char) * MAX_NOME ) );
@@ -130,8 +132,8 @@ void PUSH( void *pBuffer, void *Sentinela ){
     //Caso seja o primeiro a ser cadastrado
     if ( *(int *)Sentinela == 0 ){
 
-        *(void **)( NEW_PERSON + BACK_OF_LIST ) = NEW_PERSON;
-        *(void **)( NEW_PERSON + TOP_OF_LIST ) = NEW_PERSON;
+        *(void **)( Sentinela + BACK_OF_LIST ) = NEW_PERSON;
+        *(void **)( Sentinela + TOP_OF_LIST ) = NEW_PERSON;
 
         *(int *)Sentinela += 1;
 
@@ -185,7 +187,27 @@ void POP( void *pBuffer, void *Sentinela ){
 
 void LIST( void *pBuffer, void *Sentinela ){
 
-   
+   if (*(int *)Sentinela == 0){
+        printf("\nNinguém foi cadastrado ainda.\n");
+        return;
+    }
+
+    pBuffer = *(void **)(Sentinela + TOP_OF_LIST);
+
+    printf("\nCADASTROS ENCONTRADOS: %d\n", *(int *)Sentinela);
+
+    do{
+        printf("\n------------------\n\nNome: %s\nIdade: %s\nTelefone: %s\n\n",
+               (char *)pBuffer,
+                (char *)(pBuffer + MAX_NOME),
+                 (char *)(pBuffer + MAX_NOME + MAX_IDADE)
+                 );
+
+        pBuffer = *(void **)(pBuffer + NEXT);
+
+    } while (pBuffer != NULL);
+
+    return;
 
 }
 
