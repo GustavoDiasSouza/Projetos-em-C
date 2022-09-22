@@ -1,0 +1,201 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
+
+#define MAX_NOME 20
+#define MAX_IDADE 3
+#define MAX_TELEFONE 10
+
+//Espaco minimo para cadastro
+#define PERSON ( sizeof(char) * MAX_NOME + sizeof(char) * MAX_IDADE + sizeof(char) * MAX_TELEFONE + sizeof(void **) * 2)
+
+//Primeiro da Lista
+#define TOP_OF_LIST ( sizeof(int) + sizeof(void **) )
+
+//Ultimo da Lista
+#define BACK_OF_LIST ( sizeof(int) )
+
+//Aponta para o proximo
+#define NEXT ((sizeof(char) * MAX_NOME) + (sizeof(char) * MAX_IDADE) + (sizeof(char) * MAX_TELEFONE) + sizeof(void **))
+
+//Anterior
+#define LAST ((sizeof(char) * MAX_NOME) + (sizeof(char) * MAX_IDADE) + (sizeof(char) * MAX_TELEFONE))
+
+//Faz as operacoes
+#define WORKER ( sizeof(void **) )
+
+
+
+int menu();
+void PUSH();
+void POP();
+void SEARCH();
+void LIST();
+
+int main(){
+
+    //Aloca espaco para adicionar 1 pessoa.
+    void *pBuffer = (void *)calloc( 1, sizeof(void **) + sizeof(int) + MAX_NOME * sizeof(char) );
+    void *Sentinela = (void *)calloc( 1, sizeof(int) + sizeof(void **) * 2);
+
+    if ( !pBuffer || !Sentinela){
+        printf("Sem memoria disponivel para executar!");
+        return (-1);
+    }
+
+    *(int *)Sentinela = 0;
+    *(void **)(pBuffer) = NULL;
+    *(void **)(Sentinela + sizeof(int) + sizeof(void **) ) = NULL;
+    *(void **)(Sentinela + sizeof(int) ) = NULL;
+
+        do{
+            *(int *)(pBuffer + WORKER) = menu(pBuffer);
+
+            switch ( *(int *)( pBuffer + WORKER ) ){
+                case 1:
+
+                    
+                    PUSH( pBuffer, Sentinela );
+    
+
+                    break;
+                case 2:
+                    POP( pBuffer, Sentinela );
+
+                    break;
+                case 3:
+                    SEARCH( pBuffer, Sentinela );
+
+                    break;
+                case 4:
+                    LIST( pBuffer, Sentinela );
+                    
+                    break;
+                case 0:
+
+                    free(pBuffer);
+                    free(Sentinela);
+                    return 0;
+
+            }
+
+        } while ( *(int *)( pBuffer + WORKER ) != 0 );
+
+    return 0;
+}
+
+int menu(void *pBuffer){
+
+    *(int *)(pBuffer + WORKER) = 0;
+
+    printf("\n\n1 - Adicionar");
+    printf("\n2 - Apagar");
+    printf("\n3 - Buscar");
+    printf("\n4 - Listar");
+    printf("\nEscolha:");
+    scanf("%d", &*(int *)(pBuffer + WORKER));
+    getchar();
+
+    return *(int *)(pBuffer + WORKER);
+
+}
+
+void PUSH( void *pBuffer, void *Sentinela ){
+
+    void *Pointer;
+    void *NEW_PERSON = (void *)malloc( PERSON );
+
+    if ( !NEW_PERSON ){
+        printf("\nSEM MEMORIA");
+        return;
+    }
+
+    printf("#-- Nova pessoa --#");
+
+    printf("\nNome: ");
+    scanf("%s", (char *)NEW_PERSON );
+    
+    printf("\nIdade: ");
+    scanf("%s", (char *)( NEW_PERSON + sizeof(char) * MAX_NOME ) );
+    getchar();
+
+    printf("\nTelefone: ");
+    scanf("%s", (char *)( NEW_PERSON + (sizeof(char) * MAX_NOME) + (sizeof(char) * MAX_IDADE)) );
+    getchar();
+
+    *(void **)( NEW_PERSON + (sizeof(char) * MAX_NOME) + (sizeof(char) * MAX_IDADE) + (sizeof(char) * MAX_TELEFONE) ) = NULL;
+    *(void **)( NEW_PERSON + (sizeof(char) * MAX_NOME) + (sizeof(char) * MAX_IDADE) + (sizeof(char) * MAX_TELEFONE) + sizeof(void **) ) = NULL;
+
+    //Caso seja o primeiro a ser cadastrado
+    if ( *(int *)Sentinela == 0 ){
+
+        *(void **)( NEW_PERSON + BACK_OF_LIST ) = NEW_PERSON;
+        *(void **)( NEW_PERSON + TOP_OF_LIST ) = NEW_PERSON;
+
+        *(int *)Sentinela += 1;
+
+        return;
+    }
+
+    pBuffer = *(void **)( Sentinela + TOP_OF_LIST );
+
+    do{
+        if ( strcmp((char *)NEW_PERSON, (char *)pBuffer) < 0 ){
+
+            *(void **)(NEW_PERSON + LAST) = *(void **)(pBuffer + LAST);
+            *(void **)(NEW_PERSON + NEXT) = pBuffer;
+
+            if (*(int *)Sentinela > 1 && *(void **)(pBuffer + LAST) != NULL){
+                Pointer = *(void **)(pBuffer + LAST);
+                *(void **)(Pointer + NEXT) = NEW_PERSON;
+            }
+            *(void **)(pBuffer + LAST) = NEW_PERSON;
+
+            if (*(void **)(NEW_PERSON + LAST) == NULL){
+                *(void **)(Sentinela + TOP_OF_LIST) = NEW_PERSON;
+            }
+
+            *(int *)Sentinela += 1;
+            return;
+        }
+
+        if (*(void **)(pBuffer + NEXT) == NULL){
+            break;
+        }
+        pBuffer = *(void **)(pBuffer + NEXT);
+
+    } while (pBuffer != NULL);
+
+    *(void **)(NEW_PERSON + LAST) = pBuffer;
+    *(void **)(pBuffer + NEXT) = NEW_PERSON;
+    *(void **)(Sentinela + BACK_OF_LIST) = NEW_PERSON;
+
+    *(int *)Sentinela += 1;
+    return;
+
+
+}
+
+void POP( void *pBuffer, void *Sentinela ){
+
+   
+
+}
+
+void LIST( void *pBuffer, void *Sentinela ){
+
+   
+
+}
+
+void SEARCH( void *pBuffer, void *Sentinela ){
+
+
+
+}
+
+void CLEAR( void *pBuffer, void *Sentinela ){
+    
+}
+
