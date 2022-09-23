@@ -4,8 +4,8 @@
 
 
 #define MAX_NOME 20
-#define MAX_IDADE 3
-#define MAX_TELEFONE 10
+#define MAX_IDADE 4
+#define MAX_TELEFONE 16
 
 //Espaco minimo para cadastro
 #define PERSON ( sizeof(char) * MAX_NOME + sizeof(char) * MAX_IDADE + sizeof(char) * MAX_TELEFONE + sizeof(void **) * 2)
@@ -25,7 +25,7 @@
 //Faz as operacoes
 #define WORKER ( sizeof(void **) )
 
-
+// %19[^\n]%*c | Pega apenas 20 caracter e pega os espacos
 
 int menu();
 void PUSH();
@@ -94,6 +94,7 @@ int menu(void *pBuffer){
     printf("\n2 - Apagar");
     printf("\n3 - Buscar");
     printf("\n4 - Listar");
+    printf("\n5 - Limpar");
     printf("\n0 - Sair");
     printf("\nEscolha:");
     scanf("%d", &*(int *)(pBuffer + WORKER));
@@ -143,12 +144,13 @@ void PUSH( void *pBuffer, void *Sentinela ){
     pBuffer = *(void **)( Sentinela + TOP_OF_LIST );
 
     do{
-        if ( strcmp((char *)NEW_PERSON, (char *)pBuffer) < 0 ){
+
+        if ( strcmp( (char *)NEW_PERSON, (char *)pBuffer )  < 0 ){
 
             *(void **)(NEW_PERSON + LAST) = *(void **)(pBuffer + LAST);
             *(void **)(NEW_PERSON + NEXT) = pBuffer;
 
-            if (*(int *)Sentinela > 1 && *(void **)(pBuffer + LAST) != NULL){
+            if ( *(int *)Sentinela > 1 && *(void **)(pBuffer + LAST) != NULL ){
                 Pointer = *(void **)(pBuffer + LAST);
                 *(void **)(Pointer + NEXT) = NEW_PERSON;
             }
@@ -165,6 +167,7 @@ void PUSH( void *pBuffer, void *Sentinela ){
         if (*(void **)(pBuffer + NEXT) == NULL){
             break;
         }
+
         pBuffer = *(void **)(pBuffer + NEXT);
 
     } while (pBuffer != NULL);
@@ -181,8 +184,61 @@ void PUSH( void *pBuffer, void *Sentinela ){
 
 void POP( void *pBuffer, void *Sentinela ){
 
-   
+   void *WORKER3;
 
+    if (*(int *)Sentinela == 0){
+        printf("\nNinguém foi cadastrado ainda.\n");
+        return;
+    }
+
+    printf("\nNome para ser removido da agenda: ");
+    scanf("%19[^\n]%*c", (char *)(pBuffer + sizeof(void **) + sizeof(int)));
+    
+
+    void *TARGET = (char *)(pBuffer + (sizeof(void **) + sizeof(int)) );
+
+    pBuffer = *(void **)(Sentinela + TOP_OF_LIST);
+
+    do{
+        if ( strcmp((char *)pBuffer, (char *)TARGET) == 0 ){
+
+            if (*(void **)(pBuffer + LAST) != NULL){
+
+                WORKER3 = *(void **)(pBuffer + LAST);
+
+                *(void **)(WORKER3 + NEXT) = *(void **)(pBuffer + NEXT);
+
+            } else{
+
+                *(void **)(Sentinela + TOP_OF_LIST) = *(void **)(pBuffer + TOP_OF_LIST);
+
+            }
+            if (*(void **)(pBuffer + NEXT) != NULL){
+
+                WORKER3 = *(void **)(pBuffer + NEXT);
+
+                *(void **)(WORKER3 + LAST) = *(void **)(pBuffer + LAST);
+
+            } else{
+
+                *(void **)(Sentinela + BACK_OF_LIST) = *(void **)(pBuffer + LAST);
+
+            }
+
+            *(int *)Sentinela -= 1;
+
+            free(pBuffer);
+            
+            printf("\nIndivíduo removido com sucesso.\n");
+            return;
+        }
+        pBuffer = *(void **)(pBuffer + NEXT);
+
+    } while (pBuffer != NULL);
+
+    printf("\nNome não encontrado.\n");
+
+    //free(TARGET);
 }
 
 void LIST( void *pBuffer, void *Sentinela ){
@@ -197,6 +253,7 @@ void LIST( void *pBuffer, void *Sentinela ){
     printf("\nCADASTROS ENCONTRADOS: %d\n", *(int *)Sentinela);
 
     do{
+
         printf("\n------------------\n\nNome: %s\nIdade: %s\nTelefone: %s\n\n",
                (char *)pBuffer,
                 (char *)(pBuffer + MAX_NOME),
@@ -213,11 +270,60 @@ void LIST( void *pBuffer, void *Sentinela ){
 
 void SEARCH( void *pBuffer, void *Sentinela ){
 
+    if ( *(int *)Sentinela == 0 ){
+        printf("\nNenhuma pessoa na agenda ainda.\n");
+        return;
+    }
 
+    printf("\nNome da pessoa que deseja buscar: ");
+
+
+    scanf("%19[^\n]%*c", (char *)(pBuffer + sizeof(void **) + sizeof(int)) );
+
+    void *WORKER2 = ( pBuffer + sizeof(void **) + sizeof(int) );
+
+    pBuffer = *(void **)(Sentinela + TOP_OF_LIST);
+
+    while (pBuffer != NULL){
+
+        if ( strcmp((char *) WORKER2, pBuffer ) == 0 ){
+
+            printf("\n------------------\n\nNome: %s\nIdade: %s\nTelefone: %s\n------------------\n",
+                   (char *)pBuffer,
+                    (char *)(pBuffer + sizeof(char) * MAX_NOME),
+                     (char *)(pBuffer + sizeof(char) * MAX_NOME + sizeof(char) * MAX_IDADE)
+                     );
+
+            return;
+        } else{
+            pBuffer = *(void **)(pBuffer + NEXT);
+        }
+    }
+    printf("\nNome nao encontrado.\n");
+
+    return;
 
 }
 
 void CLEAR( void *pBuffer, void *Sentinela ){
+
+    void *WORKER2;
+
+    pBuffer = *(void **)(Sentinela + TOP_OF_LIST);
+
+    while (pBuffer != NULL){
+
+        WORKER2 = *(void **)(pBuffer + NEXT);
+
+        free(pBuffer);
+
+        pBuffer = WORKER2;
+    }
+
+    free(WORKER2);
     
+    printf("\nLista limpa com sucesso.\n");
+
+    return;
 }
 
