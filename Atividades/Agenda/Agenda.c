@@ -2,6 +2,19 @@
 #include <stdlib.h>
 #include <string.h>
 
+/* Gustavo Dias Souza
+https://github.com/GustavoDiasSouza/Projetos-em-C
+
+#-TRABALHO da Agenda:
+-Continuar a sua implementação da agenda (exercício 3) semana 1 dentro dos mesmo parâmetros, mas incluir o seguinte.
+-Nenhuma variável pode ser declarada em todo o programa, somente ponteiros. Todos os dados do programa devem ser guardados dentro do pBuffer.
+-Nem mesmo como parâmetro de função. Só ponteiros que apontam para dentro do pBuffer.
+-Exemplo do que não pode: int c; char a; int v[10];  void Funcao(int parametro)
+-Não pode usar struct em todo o programa.
+-Usar fila ordenada (heap) para armazenar as pessoas em ordem alfabética sempre que o usuário incluir uma nova pessoa.
+-Implementar a base de dados da agenda usando lista duplamente ligada
+-Somente essa base de dados pode ficar fora do buffer principal, ou seja, pode usar um malloc para cada nodo.
+*/
 
 #define MAX_NOME 20
 #define MAX_IDADE 4
@@ -51,6 +64,7 @@ int main(){
     *(void **)(Sentinela + sizeof(int) ) = NULL;
 
         do{
+
             *(int *)(pBuffer + WORKER) = menu(pBuffer);
 
             switch ( *(int *)( pBuffer + WORKER ) ){
@@ -77,6 +91,11 @@ int main(){
                 case 5:
 
                     CLEAR(pBuffer, Sentinela);
+
+                    *(int *)Sentinela = 0;
+                    *(void **)(pBuffer) = NULL;
+                    *(void **)(Sentinela + sizeof(int) + sizeof(void **) ) = NULL;
+                    *(void **)(Sentinela + sizeof(int) ) = NULL;
 
                     break;
                 case 0:
@@ -157,9 +176,11 @@ void PUSH( void *pBuffer, void *Sentinela ){
             *(void **)(NEW_PERSON + NEXT) = pBuffer;
 
             if ( *(int *)Sentinela > 1 && *(void **)(pBuffer + LAST) != NULL ){
+
                 Pointer = *(void **)(pBuffer + LAST);
                 *(void **)(Pointer + NEXT) = NEW_PERSON;
             }
+
             *(void **)(pBuffer + LAST) = NEW_PERSON;
 
             if (*(void **)(NEW_PERSON + LAST) == NULL){
@@ -184,8 +205,6 @@ void PUSH( void *pBuffer, void *Sentinela ){
 
     *(int *)Sentinela += 1;
     return;
-
-
 }
 
 void POP( void *pBuffer, void *Sentinela ){
@@ -216,7 +235,7 @@ void POP( void *pBuffer, void *Sentinela ){
 
             } else{
 
-                *(void **)(Sentinela + TOP_OF_LIST) = *(void **)(pBuffer + TOP_OF_LIST);
+                *(void **)(Sentinela + TOP_OF_LIST) = *(void **)(pBuffer + NEXT);
 
             }
             if (*(void **)(pBuffer + NEXT) != NULL){
@@ -271,7 +290,6 @@ void LIST( void *pBuffer, void *Sentinela ){
     } while (pBuffer != NULL);
 
     return;
-
 }
 
 void SEARCH( void *pBuffer, void *Sentinela ){
@@ -316,7 +334,6 @@ void CLEAR( void *pBuffer, void *Sentinela ){
 
     pBuffer = *(void **)(Sentinela + TOP_OF_LIST);
 
-
     while (pBuffer != NULL){
 
         WORKER2 = *(void **)(pBuffer + NEXT);
@@ -327,8 +344,10 @@ void CLEAR( void *pBuffer, void *Sentinela ){
     }
 
     free(WORKER2);
+
     
-    printf("\nLista limpa com sucesso.\n");
+    
+    printf("\nLista limpa com sucesso!.\n");
 
     return;
 }
