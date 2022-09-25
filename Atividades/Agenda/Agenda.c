@@ -32,6 +32,7 @@ void PUSH();
 void POP();
 void SEARCH();
 void LIST();
+void CLEAR();
 
 int main(){
 
@@ -71,6 +72,11 @@ int main(){
                 case 4:
 
                     LIST( pBuffer, Sentinela );
+
+                    break;
+                case 5:
+
+                    CLEAR(pBuffer, Sentinela);
 
                     break;
                 case 0:
@@ -277,7 +283,6 @@ void SEARCH( void *pBuffer, void *Sentinela ){
 
     printf("\nNome da pessoa que deseja buscar: ");
 
-
     scanf("%19[^\n]%*c", (char *)(pBuffer + sizeof(void **) + sizeof(int)) );
 
     void *WORKER2 = ( pBuffer + sizeof(void **) + sizeof(int) );
@@ -310,6 +315,7 @@ void CLEAR( void *pBuffer, void *Sentinela ){
     void *WORKER2;
 
     pBuffer = *(void **)(Sentinela + TOP_OF_LIST);
+
 
     while (pBuffer != NULL){
 
