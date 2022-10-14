@@ -343,9 +343,6 @@ void CLEAR( void *pBuffer, void *Sentinela ){
         pBuffer = WORKER2;
     }
 
-    free(WORKER2);
-
-    
     
     printf("\nLista limpa com sucesso!.\n");
 
