@@ -1,6 +1,14 @@
 #include <string.h>
 #include <stdio.h>
 
+/* Gustavo Dias Souza
+
+    #- Arvore binaria AVL com balanceamento -#
+    - Objetivo eh criar uma estrutura de arvore com apenas 2 ramificacoes(binaria) que se mantenha balanceada(tenha o mesmo numero de elemento de cada lado) a cada insercao feita. 
+
+
+*/
+
 
 typedef struct Leaf{
     int valor;
