@@ -32,7 +32,6 @@ Leaf* balancear();
 int main(){
 
     /* DEBUG */
-
     Leaf *raiz;
     raiz = NULL;
     int data[] = {5,8};
@@ -45,10 +44,7 @@ int main(){
         
     }
 
-    
-
     /* --- */
-
 
     printf("\n");
     return 0;
