@@ -17,16 +17,16 @@ typedef struct Leaf{
 } Leaf;
 
 
-Leaf * PUSH();
-Leaf * createLeaf();
-short maior();
-short alturaLeaf();
-short fatorBalenceamento();
-Leaf* rotacaoEsquerda();
-Leaf* rotacaoDireita();
-Leaf* rotacaoEsquerdaDireita();
-Leaf* rotacaoDireitaEsquerda();
-Leaf* balancear();
+Leaf * PUSH(Leaf *leaf, int valor);
+Leaf * createLeaf(int newValor);
+short maior(int a, int b);
+short alturaLeaf(Leaf *leaf);
+short fatorBalenceamento(Leaf *leaf);
+Leaf* rotacaoEsquerda( Leaf *leaf);
+Leaf* rotacaoDireita( Leaf *leaf);
+Leaf* rotacaoEsquerdaDireita( Leaf *leaf);
+Leaf* rotacaoDireitaEsquerda( Leaf *leaf);
+Leaf* balancear( Leaf *leaf );
 
 
 int main(){
@@ -34,12 +34,12 @@ int main(){
     /* DEBUG */
     Leaf *raiz;
     raiz = NULL;
-    int data[] = {5,8};
+    int data[] = {5,8,3,9,2,1,3,4};
 
     
 
     for (int i = 0; i < 2; i++){
-
+        PUSH(raiz, data[i]);
 
         
     }
