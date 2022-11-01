@@ -1,5 +1,6 @@
 #include <string.h>
 #include <stdio.h>
+#include <time.h>
 
 /* Gustavo Dias Souza
 
@@ -7,6 +8,7 @@
     - Objetivo eh criar uma estrutura de arvore com apenas 2 ramificacoes(binaria) que se mantenha balanceada(tenha o mesmo numero de elemento de cada lado) a cada insercao feita. 
 
 
+Remover um nó de uma arvore 
 */
 
 
@@ -27,28 +29,37 @@ Leaf* rotacaoDireita( Leaf *leaf);
 Leaf* rotacaoEsquerdaDireita( Leaf *leaf);
 Leaf* rotacaoDireitaEsquerda( Leaf *leaf);
 Leaf* balancear( Leaf *leaf );
-
+Leaf* POP(Leaf *leaf, int chave);
+void imprimir(Leaf *leaf, int nivel);
 
 int main(){
 
-    /* DEBUG */
-    Leaf *raiz;
-    raiz = NULL;
-    int data[] = {5,8,3,9,2,1,3,4};
-
     
 
-    for (int i = 0; i < 2; i++){
-        PUSH(raiz, data[i]);
+    Leaf *raiz;
+    raiz = NULL;
 
-        
+
+    int ranvals[20];
+
+    srand(18);
+
+    for ( int i = 0 ; i < 20; i++ ){
+        ranvals[i] = rand() % 20;
     }
 
-    /* --- */
+
+    for (int i = 0; i <  sizeof(ranvals)/sizeof(ranvals[0]) ; i++){
+        raiz = PUSH(raiz, ranvals[i]);        
+    }
+
+    imprimir(raiz , 0);
+
 
     printf("\n");
     return 0;
 }
+
 
 Leaf * PUSH( Leaf *raiz, int newValor ){
 
@@ -105,8 +116,6 @@ short alturaLeaf(Leaf *leaf){
     }
 }
 
-
-//Balanceamento
 short fatorBalenceamento(Leaf *leaf){
 
     if(leaf){
@@ -181,4 +190,79 @@ Leaf* balancear(Leaf *leaf){
     } 
 
     return leaf;
+}
+
+Leaf* POP(Leaf *leaf, int chave){
+
+    if ( leaf == NULL ) return NULL;
+
+    if ( leaf->valor == chave ){
+        
+        //1 caso
+        if ( leaf->LeafLeft == NULL && leaf->LeafRight == NULL ){
+            
+            free(leaf);
+            printf("Elemento removido %d \n", chave);
+            return NULL;
+        } 
+
+
+        //2 caso
+        if ( leaf->LeafRight != NULL && leaf->LeafLeft != NULL ){
+
+            Leaf *aux = leaf->LeafLeft;
+
+            while ( aux->LeafRight != NULL ){
+                aux = aux->LeafRight;
+            }
+
+            leaf->valor = aux->valor;
+            aux->valor = chave;
+            printf("Elemento Trocado!");
+
+            leaf->LeafLeft = POP(leaf->LeafLeft, chave);
+            return leaf;
+        }
+
+        //3 caso
+        Leaf *aux;
+        if ( leaf->LeafLeft != NULL ){
+            aux = leaf->LeafLeft;
+        } else {
+            aux = leaf->LeafRight;
+        }
+
+        free(leaf);
+        printf("Elemento com 1 filho removido");
+        return aux;
+
+    } else {
+        if ( chave < leaf->valor ){
+            leaf->LeafLeft = POP(leaf->LeafLeft, chave);
+        } else {
+            leaf->LeafRight = POP(leaf->LeafRight, chave);
+        }
+    }
+
+    leaf->altura = maior(alturaLeaf(leaf->LeafLeft), alturaLeaf(leaf->LeafRight) +1);
+
+    leaf = balancear(leaf);
+
+ return leaf;
+}
+
+void imprimir(Leaf *leaf, int nivel){
+    int i;
+    if ( leaf ){
+        imprimir(leaf->LeafRight, nivel +1);
+        printf("\n\n");
+
+        for ( i = 0; i < nivel; i++ ){
+            printf("\t");
+        }
+
+        printf("%d", leaf->valor);
+        imprimir(leaf->LeafLeft, nivel +1);
+    }
+
 }
