@@ -5,12 +5,9 @@
 /* Gustavo Dias Souza
 
     #- Arvore binaria AVL com balanceamento -#
-    - Objetivo eh criar uma estrutura de arvore com apenas 2 ramificacoes(binaria) que se mantenha balanceada(tenha o mesmo numero de elemento de cada lado) a cada insercao feita. 
+    - Objetivo eh criar uma estrutura de arvore com apenas 2 ramificacoes(binaria) que se mantenha balanceada(tenha o mesmo numero de elemento de cada lado) a cada insercao feita.
 
-
-Remover um nó de uma arvore 
 */
-
 
 typedef struct Leaf{
     int valor;
@@ -18,81 +15,88 @@ typedef struct Leaf{
     short altura;
 } Leaf;
 
-
-Leaf * PUSH(Leaf *leaf, int valor);
-Leaf * createLeaf(int newValor);
+Leaf *PUSH(Leaf *raiz, int valor);
+Leaf *createLeaf(int newValor);
 short maior(int a, int b);
-short alturaLeaf(Leaf *leaf);
-short fatorBalenceamento(Leaf *leaf);
-Leaf* rotacaoEsquerda( Leaf *leaf);
-Leaf* rotacaoDireita( Leaf *leaf);
-Leaf* rotacaoEsquerdaDireita( Leaf *leaf);
-Leaf* rotacaoDireitaEsquerda( Leaf *leaf);
-Leaf* balancear( Leaf *leaf );
-Leaf* POP(Leaf *leaf, int chave);
-void imprimir(Leaf *leaf, int nivel);
+short alturaLeaf(Leaf *raiz);
+short fatorBalenceamento(Leaf *raiz);
+Leaf *rotacaoEsquerda(Leaf *raiz);
+Leaf *rotacaoDireita(Leaf *raiz);
+Leaf *rotacaoEsquerdaDireita(Leaf *raiz);
+Leaf *rotacaoDireitaEsquerda(Leaf *raiz);
+Leaf *balancear(Leaf *raiz);
+Leaf *POP(Leaf *raiz, int chave);
+void imprimir(Leaf *raiz, int nivel);
 
 int main(){
 
-    
-
     Leaf *raiz;
     raiz = NULL;
+    int totalNumerosInseridos = 20;
 
-
-    int ranvals[20];
+    int ranvals[totalNumerosInseridos];
 
     srand(18);
 
-    for ( int i = 0 ; i < 20; i++ ){
-        ranvals[i] = rand() % 20;
+    for (int i = 0; i < totalNumerosInseridos; i++)
+    {
+        ranvals[i] = rand() % totalNumerosInseridos;
     }
 
+    for (int i = 0; i < sizeof(ranvals) / sizeof(ranvals[0]); i++)
+    {
+        raiz = PUSH(raiz, ranvals[i]);
+        printf("\n\nMAPA\n\n");
+            imprimir(raiz, 0);
 
-    for (int i = 0; i <  sizeof(ranvals)/sizeof(ranvals[0]) ; i++){
-        raiz = PUSH(raiz, ranvals[i]);        
     }
 
-    imprimir(raiz , 0);
 
 
     printf("\n");
     return 0;
 }
 
+Leaf *PUSH(Leaf *raiz, int newValor){
 
-Leaf * PUSH( Leaf *raiz, int newValor ){
+    // Arvore vazia
+    if (raiz == NULL)
+        return createLeaf(newValor);
 
-    //Arvore vazia
-    if (raiz == NULL) return createLeaf(newValor);
-
-    //Define se vai ser a esquerda ou direita
-    if ( newValor < raiz->valor ){
+    // Define se vai ser a esquerda ou direita
+    if (newValor < raiz->valor)
+    {
         raiz->LeafLeft = PUSH(raiz->LeafLeft, newValor);
-    } else  if (newValor > raiz->valor){
+    }
+    else if (newValor > raiz->valor)
+    {
         raiz->LeafRight = PUSH(raiz->LeafRight, newValor);
-    } else {
+    }
+    else
+    {
         printf("\nO elemento ja existe");
     }
 
-    raiz->altura = maior( alturaLeaf(raiz->LeafLeft ), alturaLeaf(raiz->LeafRight)) +1;
+    raiz->altura = maior(alturaLeaf(raiz->LeafLeft), alturaLeaf(raiz->LeafRight)) + 1;
 
     raiz = balancear(raiz);
 
-    return raiz;    
+    return raiz;
 }
 
 Leaf *createLeaf(int newValor){
-    Leaf *newLeaf = malloc( sizeof(Leaf) );
+    Leaf *newLeaf = malloc(sizeof(Leaf));
 
-    if(newLeaf){
+    if (newLeaf)
+    {
 
         newLeaf->valor = newValor;
         newLeaf->LeafLeft = NULL;
         newLeaf->LeafRight = NULL;
         newLeaf->altura = 0;
-
-    } else {
+    }
+    else
+    {
         printf("\nFalta de Memory");
         return NULL;
     }
@@ -100,169 +104,188 @@ Leaf *createLeaf(int newValor){
     return newLeaf;
 }
 
-
-//Qual lado eh maior
-short maior(int a , int b){
-    return (a < b ) ? a : b;
+// Qual lado eh maior
+short maior(int a, int b){
+    return (a < b) ? a : b;
 }
 
-
-//Retorna a altura da LEAF ou -1 caso seja null
-short alturaLeaf(Leaf *leaf){
-    if( leaf== NULL){
+// Retorna a altura da LEAF ou -1 caso seja null
+short alturaLeaf(Leaf *raiz){
+    if (raiz == NULL)
+    {
         return -1;
-    } else {
-        return leaf->altura;
+    }
+    else
+    {
+        return raiz->altura;
     }
 }
 
-short fatorBalenceamento(Leaf *leaf){
+short fatorBalenceamento(Leaf *raiz){
 
-    if(leaf){
-        return ( alturaLeaf(leaf->LeafLeft) - alturaLeaf(leaf->LeafRight) );
-    } else {
+    if (raiz)
+    {
+        return (alturaLeaf(raiz->LeafLeft) - alturaLeaf(raiz->LeafRight));
+    }
+    else
+    {
         return 0;
     }
-
 }
 
-Leaf* rotacaoEsquerda(Leaf *leaf){
-    Leaf *auxA, *auxB;
+Leaf *rotacaoEsquerda(Leaf *raiz){
+    Leaf *ping, *pong;
 
+    ping = raiz->LeafRight;
+    pong = ping->LeafLeft;
 
-    auxA = leaf->LeafRight;
-    auxB = auxA->LeafLeft;
+    ping->LeafLeft = raiz;
+    raiz->LeafRight = pong;
 
-    auxA->LeafLeft = leaf;
-    leaf->LeafRight = auxB;
+    raiz->altura = maior(alturaLeaf(raiz->LeafLeft), alturaLeaf(raiz->LeafRight) + 1);
+    ping->altura = maior(alturaLeaf(ping->LeafLeft), alturaLeaf(ping->LeafRight) + 1);
 
-    leaf->altura = maior( alturaLeaf(leaf->LeafLeft ), alturaLeaf(leaf->LeafRight) +1 );
-    auxA->altura = maior( alturaLeaf(auxA->LeafLeft), alturaLeaf(auxA->LeafRight) +1 );
-
-
-    return auxA;
+    return ping;
 }
 
-Leaf* rotacaoDireita(Leaf *leaf){
-    Leaf *auxA, *auxB;
+Leaf *rotacaoDireita(Leaf *raiz){
+    Leaf *ping, *pong;
 
-    auxA = leaf->LeafLeft;
-    auxB = auxA->LeafRight;
+    ping = raiz->LeafLeft;
+    pong = ping->LeafRight;
 
-    auxA->LeafRight = leaf;
-    leaf->LeafLeft = auxB;
+    ping->LeafRight = raiz;
+    raiz->LeafLeft = pong;
 
-    leaf->altura = maior( alturaLeaf(leaf->LeafLeft ), alturaLeaf(leaf->LeafRight) +1 );
-    auxA->altura = maior( alturaLeaf(auxA->LeafLeft), alturaLeaf(auxA->LeafRight) +1 );
+    raiz->altura = maior(alturaLeaf(raiz->LeafLeft), alturaLeaf(raiz->LeafRight) + 1);
+    ping->altura = maior(alturaLeaf(ping->LeafLeft), alturaLeaf(ping->LeafRight) + 1);
 
-
-    return auxA;
+    return ping;
 }
 
-Leaf* rotacaoDireitaEsquerda(Leaf *leaf){
-    leaf->LeafRight = rotacaoDireita(leaf->LeafRight);
-    return rotacaoEsquerda(leaf);
+Leaf *rotacaoDireitaEsquerda(Leaf *raiz){
+    raiz->LeafRight = rotacaoDireita(raiz->LeafRight);
+    return rotacaoEsquerda(raiz);
 }
 
-Leaf* rotacaoEsquerdaDireita(Leaf *leaf){
-    leaf->LeafLeft = rotacaoEsquerda(leaf->LeafLeft);
-    return rotacaoDireita(leaf);
+Leaf *rotacaoEsquerdaDireita(Leaf *raiz){
+    raiz->LeafLeft = rotacaoEsquerda(raiz->LeafLeft);
+    return rotacaoDireita(raiz);
 }
 
-Leaf* balancear(Leaf *leaf){
-    short fb = fatorBalenceamento(leaf);
+Leaf *balancear(Leaf *raiz){
+    short fb = fatorBalenceamento(raiz);
 
-    //Rotacao ah esquerda
-    if ( fb < -1 && fatorBalenceamento(leaf->LeafRight) <= 0 ){
-        leaf = rotacaoEsquerda(leaf);
+    // Rotacao ah esquerda
+    if (fb < -1 && fatorBalenceamento(raiz->LeafRight) <= 0)
+    {
+        raiz = rotacaoEsquerda(raiz);
 
-    //Rotacao ah direita
-    } else if ( fb > 1 && fatorBalenceamento(leaf->LeafLeft) >= 0 ){
-        leaf = rotacaoDireita(leaf);
+        // Rotacao ah direita
+    }
+    else if (fb > 1 && fatorBalenceamento(raiz->LeafLeft) >= 0)
+    {
+        raiz = rotacaoDireita(raiz);
 
-    //Rotacao dupla ah esquerda
-    } else if ( fb > 1 && fatorBalenceamento(leaf->LeafLeft) < 0 ){
-        leaf = rotacaoEsquerdaDireita(leaf);
+        // Rotacao dupla ah esquerda
+    }
+    else if (fb > 1 && fatorBalenceamento(raiz->LeafLeft) < 0)
+    {
+        raiz = rotacaoEsquerdaDireita(raiz);
 
-    //Ratacao dupla ah direita
-    } else if ( fb < -1 && fatorBalenceamento(leaf->LeafRight) > 0 ){
-        leaf = rotacaoDireitaEsquerda(leaf);
-    } 
+        // Ratacao dupla ah direita
+    }
+    else if (fb < -1 && fatorBalenceamento(raiz->LeafRight) > 0)
+    {
+        raiz = rotacaoDireitaEsquerda(raiz);
+    }
 
-    return leaf;
+    return raiz;
 }
 
-Leaf* POP(Leaf *leaf, int chave){
+Leaf *POP(Leaf *raiz, int chave){
 
-    if ( leaf == NULL ) return NULL;
+    if (raiz == NULL)
+        return NULL;
 
-    if ( leaf->valor == chave ){
-        
-        //1 caso
-        if ( leaf->LeafLeft == NULL && leaf->LeafRight == NULL ){
-            
-            free(leaf);
-            printf("Elemento removido %d \n", chave);
+    if (raiz->valor == chave)
+    {
+
+        // 1 caso
+        if (raiz->LeafLeft == NULL && raiz->LeafRight == NULL)
+        {
+
+            free(raiz);
+            printf("\nElemento removido %d \n", chave);
             return NULL;
-        } 
+        }
 
+        // 2 caso
+        if (raiz->LeafRight != NULL && raiz->LeafLeft != NULL)
+        {
 
-        //2 caso
-        if ( leaf->LeafRight != NULL && leaf->LeafLeft != NULL ){
+            Leaf *aux = raiz->LeafLeft;
 
-            Leaf *aux = leaf->LeafLeft;
-
-            while ( aux->LeafRight != NULL ){
+            while (aux->LeafRight != NULL)
+            {
                 aux = aux->LeafRight;
             }
 
-            leaf->valor = aux->valor;
+            raiz->valor = aux->valor;
             aux->valor = chave;
-            printf("Elemento Trocado!");
+            printf("\nElemento Trocado!");
 
-            leaf->LeafLeft = POP(leaf->LeafLeft, chave);
-            return leaf;
+            raiz->LeafLeft = POP(raiz->LeafLeft, chave);
+            return raiz;
         }
-
-        //3 caso
+        // 3 caso
         Leaf *aux;
-        if ( leaf->LeafLeft != NULL ){
-            aux = leaf->LeafLeft;
-        } else {
-            aux = leaf->LeafRight;
+        if (raiz->LeafLeft != NULL)
+        {
+            aux = raiz->LeafLeft;
+        }
+        else
+        {
+            aux = raiz->LeafRight;
         }
 
-        free(leaf);
-        printf("Elemento com 1 filho removido");
+        free(raiz);
+        printf("\nElemento com 1 filho removido");
         return aux;
-
-    } else {
-        if ( chave < leaf->valor ){
-            leaf->LeafLeft = POP(leaf->LeafLeft, chave);
-        } else {
-            leaf->LeafRight = POP(leaf->LeafRight, chave);
+    }
+    else
+    {
+        if (chave < raiz->valor)
+        {
+            raiz->LeafLeft = POP(raiz->LeafLeft, chave);
+        }
+        else
+        {
+            raiz->LeafRight = POP(raiz->LeafRight, chave);
         }
     }
 
-    leaf->altura = maior(alturaLeaf(leaf->LeafLeft), alturaLeaf(leaf->LeafRight) +1);
+    raiz->altura = maior(alturaLeaf(raiz->LeafLeft), alturaLeaf(raiz->LeafRight) + 1);
+    raiz = balancear(raiz);
 
-    leaf = balancear(leaf);
-
- return leaf;
+    return raiz;
 }
 
-void imprimir(Leaf *leaf, int nivel){
-    int i;
-    if ( leaf ){
-        imprimir(leaf->LeafRight, nivel +1);
-        printf("\n\n");
+void imprimir(Leaf *raiz, int nivel) {
 
-        for ( i = 0; i < nivel; i++ ){
+
+    if (raiz) {
+
+        imprimir(raiz->LeafRight, nivel + 1);
+        printf("\n");
+
+        for (int i = 0; i < nivel; i++)
+        {
             printf("\t");
         }
 
-        printf("%d", leaf->valor);
-        imprimir(leaf->LeafLeft, nivel +1);
+        printf("%d", raiz->valor);
+        imprimir(raiz->LeafLeft, nivel + 1);
     }
 
 }
