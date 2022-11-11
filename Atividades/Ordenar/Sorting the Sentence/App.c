@@ -113,6 +113,8 @@ char * sortSetence(char * s){
     return s; 
 } 
 
+
+
 int main(){
 
     char *Frase = "is2 sentence4 This1 a3";
