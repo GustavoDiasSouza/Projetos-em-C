@@ -29,11 +29,23 @@ int * ordenador(int * nums,int numsSize ) {
         nums[i++] = 2;
 }
 
+void imprimir(int c[], int max){
+
+    printf("\n\nImprimindo: ");
+    for (int i =0; i < max; i++){
+        printf("%d", c[i] );
+        if(i != max-1) printf(", ");
+    } 
+
+}
+
 
 
 int main() {
-  int Pointer[] = {0,2,1,0,2,2,1,1,1,0};
-  int Tamanho = (int) sizeof(Pointer) / sizeof(Pointer[0]);
-
-  ordenador(Pointer, Tamanho);
+    int Pointer[] = {0,2,1,0,2,2,1,1,1,0};
+    int Tamanho = (int) sizeof(Pointer) / sizeof(Pointer[0]);
+    imprimir(Pointer, Tamanho);  
+    ordenador(Pointer, Tamanho);
+    imprimir(Pointer, Tamanho);
+    printf("\n\n");
 }
